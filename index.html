@@ -9,20 +9,12 @@ Implement using pdf-annotate.js library
 <canvas id="the-canvas"></canvas>
 
 <script src="node_modules/pdfjs-dist/build/pdf.js"></script>
-
+<script src="pdf-annotate.js"></script>
 <script id="script">
-  //
-  // If absolute URL from the remote server is provided, configure the CORS
-  // header on that server.
-  //
-  var url = './invoice81.pdf';
 
-  //
-  // The workerSrc property shall be specified.
-  //
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'node_modules/pdfjs-dist/build/pdf.worker.js';
-
+//load file  - to jump over CORS browser error
     document.getElementById('file').onchange = function(event) {
   var file = event.target.files[0];
   var fileReader = new FileReader();
@@ -31,8 +23,7 @@ Implement using pdf-annotate.js library
     console.log(typedarray);
     const loadingTask = pdfjsLib.getDocument(typedarray);
     loadingTask.promise.then(pdf => {
-      // The document is loaded here...
-      //This below is just for demonstration purposes showing that it works with the moderen api
+
       pdf.getPage(1).then(function(page) {
         console.log('Page loaded');
 
@@ -40,11 +31,20 @@ Implement using pdf-annotate.js library
         var viewport = page.getViewport({
           scale: scale
         });
-
+        var RENDER_OPTIONS = {
+  documentId: 'pdf',
+  pdfDocument: pdf,
+  scale: 1,
+  rotate: 0
+};
         var canvas = document.getElementById('the-canvas');
         var context = canvas.getContext('2d');
         canvas.height = viewport.height;
         canvas.width = viewport.width;
+        
+        PDFAnnotate.setStoreAdapter(new PDFAnnotate.LocalStoreAdapter());
+        canvas.appendChild(PDFAnnotate.UI.createPage(1));
+        PDFAnnotate.UI.renderPage(1, RENDER_OPTIONS);
 
         // Render PDF page into canvas context
         var renderContext = {
