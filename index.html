@@ -37,6 +37,27 @@ Implement using pdf-annotate.js library
   scale: 1,
   rotate: 0
 };
+var highlight = {
+  "class": "Annotation",
+  "type": "highlight",
+  "page": 1,
+  "uuid": "99c84974-b899-4de9-8c6c-28e541c03db8",
+  "color": "FFFF00",
+  "rectangles": [
+    {
+      "height": 12,
+      "width": 335,
+      "x": 188,
+      "y": 189
+    },
+    {
+      "height": 12,
+      "width": 431,
+      "x": 72,
+      "y": 205
+    }
+  ]
+};
         var canvas = document.getElementById('the-canvas');
         var context = canvas.getContext('2d');
         canvas.height = viewport.height;
@@ -44,7 +65,10 @@ Implement using pdf-annotate.js library
         
         PDFAnnotate.setStoreAdapter(new PDFAnnotate.LocalStoreAdapter());
         canvas.appendChild(PDFAnnotate.UI.createPage(1));
-        PDFAnnotate.UI.renderPage(1, RENDER_OPTIONS);
+        PDFAnnotate.UI.enableRect('highlight');
+        PDFAnnotate.UI.renderPage(1, RENDER_OPTIONS).then(function(pdfPage, annotations) {
+    console.log(pdfPage); console.log(annotations);
+  });
 
         // Render PDF page into canvas context
         var renderContext = {
